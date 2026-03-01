@@ -1,15 +1,14 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { DecimalPipe, NgClass } from '@angular/common';
 import { CarResponse } from '@shared/interfaces/vehicle.interface';
 
 @Component({
   selector: 'app-vehicle-card',
   standalone: true,
-  imports: [RouterLink, DecimalPipe, NgClass],
+  imports: [DecimalPipe, NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <article class="card group cursor-pointer" [routerLink]="['/vehicles', car.id]">
+    <article class="card group cursor-pointer" (click)="openListing($event)">
       <!-- Thumbnail -->
       <div class="relative overflow-hidden" style="height: 210px;">
         @if (car.thumbnailUrl) {
@@ -54,9 +53,12 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
           <span class="spec-chip">{{ car.location }}</span>
         </div>
 
-        <a [routerLink]="['/vehicles', car.id]"
+        <a [href]="car.originalListingUrl"
+           target="_blank"
+           rel="nofollow noopener noreferrer"
+           (click)="$event.stopPropagation()"
            class="btn-primary block text-center text-sm mt-3">
-          View Details
+          View Original Listing
         </a>
       </div>
     </article>
@@ -72,6 +74,12 @@ export class VehicleCardComponent {
       case 'LUXURY_CARS_KOSOVA': return 'source-badge-luxury';
       case 'TRIO_VETURA': return 'source-badge-trio';
       default: return 'source-badge-default';
+    }
+  }
+
+  openListing(event: MouseEvent): void {
+    if (this.car.originalListingUrl) {
+      window.open(this.car.originalListingUrl, '_blank', 'noopener,noreferrer');
     }
   }
 
