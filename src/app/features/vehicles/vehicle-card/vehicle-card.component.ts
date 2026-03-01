@@ -9,7 +9,7 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
   imports: [RouterLink, DecimalPipe, NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <article class="card group cursor-pointer">
+    <article class="card group cursor-pointer" [routerLink]="['/vehicles', car.id]">
       <!-- Thumbnail -->
       <div class="relative overflow-hidden" style="height: 210px;">
         @if (car.thumbnailUrl) {
