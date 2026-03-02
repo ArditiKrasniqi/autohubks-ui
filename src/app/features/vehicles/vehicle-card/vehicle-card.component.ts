@@ -8,7 +8,7 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
   imports: [DecimalPipe, NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <article class="card group cursor-pointer" (click)="openListing($event)">
+    <article class="card group cursor-pointer flex flex-col h-full" (click)="openListing($event)">
       <!-- Thumbnail -->
       <div class="relative overflow-hidden" style="height: 210px;">
         @if (car.thumbnailUrl) {
@@ -34,7 +34,7 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
       </div>
 
       <!-- Info -->
-      <div class="p-5 space-y-3">
+      <div class="p-5 space-y-3 flex flex-col flex-1">
         <div class="flex items-start justify-between gap-2">
           <div>
             <h3 class="font-bold text-base truncate" style="color: #121212; letter-spacing: -0.01em;">
@@ -57,7 +57,7 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
            target="_blank"
            rel="nofollow noopener noreferrer"
            (click)="$event.stopPropagation()"
-           class="btn-primary block text-center text-sm mt-3">
+           class="btn-primary block text-center text-sm mt-auto pt-3">
           View Original Listing
         </a>
       </div>
