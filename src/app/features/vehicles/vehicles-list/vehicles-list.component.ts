@@ -77,15 +77,20 @@ import { CarResponse, CarFilterParams, PagedCarResponse } from '@shared/interfac
                 <label class="block text-xs font-semibold mb-1.5" style="color: #9E9E9E;">Min Price</label>
                 <input type="number" class="input-field-light" placeholder="€ Min"
                        [ngModel]="filters.priceFrom"
+                       [class.border-red-400]="isPriceRangeInvalid()"
                        (ngModelChange)="updateFilter('priceFrom', $event)" />
               </div>
               <div>
                 <label class="block text-xs font-semibold mb-1.5" style="color: #9E9E9E;">Max Price</label>
                 <input type="number" class="input-field-light" placeholder="€ Max"
                        [ngModel]="filters.priceTo"
+                       [class.border-red-400]="isPriceRangeInvalid()"
                        (ngModelChange)="updateFilter('priceTo', $event)" />
               </div>
             </div>
+            @if (isPriceRangeInvalid()) {
+              <p class="text-xs mt-1" style="color: #EF4444;">Min price cannot exceed max price</p>
+            }
 
             <!-- Mileage range -->
             <div class="grid grid-cols-2 gap-3">
@@ -93,15 +98,20 @@ import { CarResponse, CarFilterParams, PagedCarResponse } from '@shared/interfac
                 <label class="block text-xs font-semibold mb-1.5" style="color: #9E9E9E;">Min Mileage</label>
                 <input type="number" class="input-field-light" placeholder="km Min"
                        [ngModel]="filters.mileageFrom"
+                       [class.border-red-400]="isMileageRangeInvalid()"
                        (ngModelChange)="updateFilter('mileageFrom', $event)" />
               </div>
               <div>
                 <label class="block text-xs font-semibold mb-1.5" style="color: #9E9E9E;">Max Mileage</label>
                 <input type="number" class="input-field-light" placeholder="km Max"
                        [ngModel]="filters.mileageTo"
+                       [class.border-red-400]="isMileageRangeInvalid()"
                        (ngModelChange)="updateFilter('mileageTo', $event)" />
               </div>
             </div>
+            @if (isMileageRangeInvalid()) {
+              <p class="text-xs mt-1" style="color: #EF4444;">Min mileage cannot exceed max mileage</p>
+            }
 
             <!-- Fuel type -->
             <div>
@@ -282,6 +292,14 @@ export class VehiclesListComponent implements OnInit {
 
     this.filters.page = 0;
     this.filterSubject.next({ ...this.filters });
+  }
+
+  isPriceRangeInvalid(): boolean {
+    return !!(this.filters.priceFrom && this.filters.priceTo && this.filters.priceFrom > this.filters.priceTo);
+  }
+
+  isMileageRangeInvalid(): boolean {
+    return !!(this.filters.mileageFrom && this.filters.mileageTo && this.filters.mileageFrom > this.filters.mileageTo);
   }
 
   clearFilters(): void {

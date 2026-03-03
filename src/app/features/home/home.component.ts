@@ -62,16 +62,21 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
             <div>
               <label class="block mb-1.5" style="color: #9E9E9E; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">Min Price</label>
               <input type="number" class="input-field" placeholder="€ Min"
+                     [class.border-red-400]="isPriceRangeInvalid()"
                      [(ngModel)]="searchPriceFrom" />
             </div>
             <div>
               <label class="block mb-1.5" style="color: #9E9E9E; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">Max Price</label>
               <input type="number" class="input-field" placeholder="€ Max"
+                     [class.border-red-400]="isPriceRangeInvalid()"
                      [(ngModel)]="searchPriceTo" />
             </div>
           </div>
+          @if (isPriceRangeInvalid()) {
+            <p class="text-xs mt-1" style="color: #EF4444;">Min price cannot exceed max price</p>
+          }
           <div class="flex justify-center sm:justify-end mt-5">
-            <button (click)="onSearch()" class="btn-primary w-full sm:w-auto">
+            <button (click)="onSearch()" [disabled]="isPriceRangeInvalid()" class="btn-primary w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed">
               Search Vehicles
             </button>
           </div>
@@ -197,6 +202,10 @@ export class HomeComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((models) => this.models.set(models));
     }
+  }
+
+  isPriceRangeInvalid(): boolean {
+    return !!(this.searchPriceFrom && this.searchPriceTo && this.searchPriceFrom > this.searchPriceTo);
   }
 
   onSearch(): void {
