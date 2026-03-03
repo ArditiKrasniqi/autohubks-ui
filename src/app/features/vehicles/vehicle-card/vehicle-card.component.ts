@@ -38,7 +38,7 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <h3 class="font-bold text-base truncate" style="color: #121212; letter-spacing: -0.01em;">
-              {{ car.make }} {{ stripKorean(car.model) }}
+              {{ car.make }} {{ car.model }}
             </h3>
             <p class="text-sm font-medium" style="color: #9E9E9E;">{{ car.year }}</p>
           </div>
@@ -81,10 +81,6 @@ export class VehicleCardComponent {
     if (this.car.originalListingUrl) {
       window.open(this.car.originalListingUrl, '_blank', 'noopener,noreferrer');
     }
-  }
-
-  stripKorean(text: string): string {
-    return text.replace(/[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF]+/g, '').replace(/\s+/g, ' ').trim();
   }
 
   formatSource(source: string): string {

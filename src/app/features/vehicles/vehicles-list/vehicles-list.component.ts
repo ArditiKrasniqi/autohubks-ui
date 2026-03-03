@@ -71,6 +71,27 @@ import { CarResponse, CarFilterParams, PagedCarResponse } from '@shared/interfac
               </select>
             </div>
 
+            <!-- Year range -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1.5" style="color: #9E9E9E;">Min Year</label>
+                <input type="number" class="input-field-light" placeholder="From"
+                       [ngModel]="filters.yearFrom"
+                       [class.border-red-400]="isYearRangeInvalid()"
+                       (ngModelChange)="updateFilter('yearFrom', $event)" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1.5" style="color: #9E9E9E;">Max Year</label>
+                <input type="number" class="input-field-light" placeholder="To"
+                       [ngModel]="filters.yearTo"
+                       [class.border-red-400]="isYearRangeInvalid()"
+                       (ngModelChange)="updateFilter('yearTo', $event)" />
+              </div>
+            </div>
+            @if (isYearRangeInvalid()) {
+              <p class="text-xs mt-1" style="color: #EF4444;">Min year cannot exceed max year</p>
+            }
+
             <!-- Price range -->
             <div class="grid grid-cols-2 gap-3">
               <div>
@@ -253,6 +274,8 @@ export class VehiclesListComponent implements OnInit {
         this.filters = {
           make: params['make'] || '',
           model: params['model'] || '',
+          yearFrom: params['yearFrom'] ? +params['yearFrom'] : undefined,
+          yearTo: params['yearTo'] ? +params['yearTo'] : undefined,
           priceFrom: params['priceFrom'] ? +params['priceFrom'] : undefined,
           priceTo: params['priceTo'] ? +params['priceTo'] : undefined,
           mileageFrom: params['mileageFrom'] ? +params['mileageFrom'] : undefined,
@@ -307,6 +330,10 @@ export class VehiclesListComponent implements OnInit {
 
     this.filters.page = 0;
     this.filterSubject.next({ ...this.filters });
+  }
+
+  isYearRangeInvalid(): boolean {
+    return !!(this.filters.yearFrom && this.filters.yearTo && this.filters.yearFrom > this.filters.yearTo);
   }
 
   isPriceRangeInvalid(): boolean {
