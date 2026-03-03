@@ -130,20 +130,6 @@ import { CarResponse, CarFilterParams, PagedCarResponse } from '@shared/interfac
               </select>
             </div>
 
-            <!-- Source -->
-            <div>
-              <label class="block text-xs font-semibold mb-1.5" style="color: #9E9E9E;">Source</label>
-              <select class="input-field-light"
-                      [ngModel]="filters.sourceWebsite"
-                      (ngModelChange)="updateFilter('sourceWebsite', $event)">
-                <option value="">All Sources</option>
-                <option value="KOREA_AUTO_IMPORTS">Korea Auto Imports</option>
-                <option value="AUTOKOREA_KOSOVA">AutoKorea Kosova</option>
-                <option value="LUXURY_CARS_KOSOVA">Luxury Cars Kosova</option>
-                <option value="TRIO_VETURA">TrioVetura</option>
-              </select>
-            </div>
-
             <!-- Transmission -->
             <div>
               <label class="block text-xs font-semibold mb-1.5" style="color: #9E9E9E;">Transmission</label>
@@ -166,6 +152,35 @@ import { CarResponse, CarFilterParams, PagedCarResponse } from '@shared/interfac
 
         <!-- Main content -->
         <section class="flex-1 min-w-0">
+          <!-- Source tabs -->
+          <div class="flex items-center gap-2 flex-wrap mb-6">
+            <button
+              (click)="updateFilter('sourceWebsite', '')"
+              [class]="!filters.sourceWebsite ? 'filter-pill filter-pill-active' : 'filter-pill'">
+              All
+            </button>
+            <button
+              (click)="updateFilter('sourceWebsite', 'KOREA_AUTO_IMPORTS')"
+              [class]="filters.sourceWebsite === 'KOREA_AUTO_IMPORTS' ? 'filter-pill filter-pill-active' : 'filter-pill'">
+              Korea Auto Imports
+            </button>
+            <button
+              (click)="updateFilter('sourceWebsite', 'AUTOKOREA_KOSOVA')"
+              [class]="filters.sourceWebsite === 'AUTOKOREA_KOSOVA' ? 'filter-pill filter-pill-active' : 'filter-pill'">
+              AutoKorea Kosova
+            </button>
+            <button
+              (click)="updateFilter('sourceWebsite', 'LUXURY_CARS_KOSOVA')"
+              [class]="filters.sourceWebsite === 'LUXURY_CARS_KOSOVA' ? 'filter-pill filter-pill-active' : 'filter-pill'">
+              Luxury Cars Kosova
+            </button>
+            <button
+              (click)="updateFilter('sourceWebsite', 'TRIO_VETURA')"
+              [class]="filters.sourceWebsite === 'TRIO_VETURA' ? 'filter-pill filter-pill-active' : 'filter-pill'">
+              TrioVetura
+            </button>
+          </div>
+
           @if (loading$ | async) {
             <app-loading-skeleton [count]="6" />
           } @else if ((cars$ | async)?.length === 0) {
