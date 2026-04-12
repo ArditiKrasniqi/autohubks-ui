@@ -220,25 +220,40 @@ import { CarResponse, CarFilterParams, PagedCarResponse } from '@shared/interfac
 
             <!-- Pagination -->
             @if (totalPages > 1) {
-              <nav class="flex items-center justify-center gap-3 mt-10">
+              <nav class="flex items-center justify-center gap-1.5 mt-10">
+                <!-- Previous -->
                 <button
                   (click)="goToPage(currentPage - 1)"
                   [disabled]="currentPage === 0"
-                  class="px-4 py-2 rounded-xl text-sm font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                  style="background: #EEEEEE; color: #616161;">
-                  Previous
+                  class="page-btn"
+                  [class.disabled:opacity-30]="currentPage === 0">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                  </svg>
                 </button>
 
-                <span class="text-sm font-medium px-3" style="color: #9E9E9E;">
-                  Page {{ currentPage + 1 }} of {{ totalPages }}
-                </span>
+                @for (item of getPageNumbers(); track $index) {
+                  @if (item === -1) {
+                    <span class="page-ellipsis">&hellip;</span>
+                  } @else {
+                    <button
+                      (click)="goToPage(item)"
+                      class="page-btn"
+                      [class.page-btn-active]="item === currentPage">
+                      {{ item + 1 }}
+                    </button>
+                  }
+                }
 
+                <!-- Next -->
                 <button
                   (click)="goToPage(currentPage + 1)"
                   [disabled]="currentPage >= totalPages - 1"
-                  class="px-4 py-2 rounded-xl text-sm font-semibold transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                  style="background: #EEEEEE; color: #616161;">
-                  Next
+                  class="page-btn"
+                  [class.disabled:opacity-30]="currentPage >= totalPages - 1">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
                 </button>
               </nav>
             }
@@ -353,6 +368,32 @@ export class VehiclesListComponent implements OnInit {
   goToPage(page: number): void {
     this.filters.page = page;
     this.syncQueryParams(this.filters);
+  }
+
+  /** Builds page number array: first, last, current +/- 1 neighbors, -1 for ellipsis gaps. */
+  getPageNumbers(): number[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const siblings = 1;
+
+    const pages = new Set<number>();
+    pages.add(0);
+    pages.add(total - 1);
+    for (let i = current - siblings; i <= current + siblings; i++) {
+      if (i >= 0 && i < total) {
+        pages.add(i);
+      }
+    }
+
+    const sorted = Array.from(pages).sort((a, b) => a - b);
+    const result: number[] = [];
+    for (let i = 0; i < sorted.length; i++) {
+      if (i > 0 && sorted[i] - sorted[i - 1] > 1) {
+        result.push(-1); // ellipsis
+      }
+      result.push(sorted[i]);
+    }
+    return result;
   }
 
   private loadCars(): void {

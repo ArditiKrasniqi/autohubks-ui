@@ -7,10 +7,17 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
   standalone: true,
   imports: [DecimalPipe, NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  styles: [`
+    :host {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+  `],
   template: `
-    <article class="card group cursor-pointer flex flex-col h-full" (click)="openListing($event)">
+    <article class="card group cursor-pointer flex flex-col flex-1" (click)="openListing($event)">
       <!-- Thumbnail -->
-      <div class="relative overflow-hidden" style="height: 210px;">
+      <div class="relative overflow-hidden shrink-0" style="height: 210px;">
         @if (car.thumbnailUrl) {
           <img
             [src]="car.thumbnailUrl"
@@ -34,7 +41,7 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
       </div>
 
       <!-- Info -->
-      <div class="p-5 space-y-3 flex flex-col flex-1">
+      <div class="p-5 flex flex-col flex-1 gap-3">
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <h3 class="font-bold text-base truncate" style="color: #121212; letter-spacing: -0.01em;">
@@ -57,7 +64,7 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
            target="_blank"
            rel="nofollow noopener noreferrer"
            (click)="$event.stopPropagation()"
-           class="btn-primary block text-center text-sm mt-auto pt-3">
+           class="btn-primary block text-center text-sm mt-auto">
           View Original Listing
         </a>
       </div>
