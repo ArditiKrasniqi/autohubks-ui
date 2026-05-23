@@ -16,6 +16,7 @@ export interface CarResponse {
   numberOfAccidents: number | null;
   createdAt: string;
   scrapedAt: string;
+  clickCount: number;
 }
 
 export interface CarDetailResponse {
@@ -38,6 +39,7 @@ export interface CarDetailResponse {
   numberOfAccidents: number | null;
   createdAt: string;
   scrapedAt: string;
+  clickCount: number;
 }
 
 export interface PagedCarResponse {

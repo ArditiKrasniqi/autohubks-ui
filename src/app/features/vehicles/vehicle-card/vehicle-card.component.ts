@@ -61,6 +61,12 @@ import { TrackingService } from '@core/services/tracking.service';
           <span class="spec-chip">{{ car.transmission }}</span>
         </div>
 
+        @if (car.clickCount > 0) {
+          <p class="text-xs font-medium" style="color: #9E9E9E;">
+            {{ car.clickCount | number:'1.0-0' }} {{ car.clickCount === 1 ? 'view' : 'views' }}
+          </p>
+        }
+
         <a [href]="car.originalListingUrl"
            target="_blank"
            rel="nofollow noopener noreferrer"

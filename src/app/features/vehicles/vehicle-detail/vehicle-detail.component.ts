@@ -110,6 +110,9 @@ import { CarDetailResponse } from '@shared/interfaces/vehicle.interface';
               </h1>
               <p class="text-sm mt-1" style="color: #9E9E9E;">
                 Listed on {{ car()!.sourceWebsite }}
+                @if (car()!.clickCount > 0) {
+                  <span> &middot; {{ car()!.clickCount | number:'1.0-0' }} {{ car()!.clickCount === 1 ? 'view' : 'views' }}</span>
+                }
               </p>
             </div>
             <p class="text-3xl font-extrabold whitespace-nowrap" style="color: #FF6B2B; letter-spacing: -0.02em;">
