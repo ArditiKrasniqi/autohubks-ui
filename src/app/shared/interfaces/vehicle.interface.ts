@@ -40,6 +40,7 @@ export interface CarDetailResponse {
   createdAt: string;
   scrapedAt: string;
   clickCount: number;
+  sold: boolean;
 }
 
 export interface PagedCarResponse {

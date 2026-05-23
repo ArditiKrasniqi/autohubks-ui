@@ -104,6 +104,12 @@ import { CarDetailResponse } from '@shared/interfaces/vehicle.interface';
           <!-- Header -->
           <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
+              @if (car()!.sold) {
+                <span class="inline-block mb-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
+                      style="background: #FDE7E7; color: #C81E1E; letter-spacing: 0.08em;">
+                  Sold
+                </span>
+              }
               <h1 class="text-2xl font-bold tracking-tight" style="color: #121212;">
                 {{ car()!.make }} {{ car()!.model }}
                 <span class="font-normal" style="color: #9E9E9E;">{{ car()!.year }}</span>
