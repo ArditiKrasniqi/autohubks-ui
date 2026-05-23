@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input, inject } from '@angular/core';
 import { DecimalPipe, NgClass } from '@angular/common';
 import { CarResponse } from '@shared/interfaces/vehicle.interface';
+import { TrackingService } from '@core/services/tracking.service';
 
 @Component({
   selector: 'app-vehicle-card',
@@ -63,7 +64,7 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
         <a [href]="car.originalListingUrl"
            target="_blank"
            rel="nofollow noopener noreferrer"
-           (click)="$event.stopPropagation()"
+           (click)="trackClick($event)"
            class="btn-primary block text-center text-sm mt-auto">
           View Original Listing
         </a>
@@ -72,6 +73,7 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
   `,
 })
 export class VehicleCardComponent {
+  private readonly trackingService = inject(TrackingService);
   @Input({ required: true }) car!: CarResponse;
 
   getSourceBadgeClass(source: string): string {
@@ -86,8 +88,14 @@ export class VehicleCardComponent {
 
   openListing(event: MouseEvent): void {
     if (this.car.originalListingUrl) {
+      this.trackingService.trackListingClick(this.car.id);
       window.open(this.car.originalListingUrl, '_blank', 'noopener,noreferrer');
     }
+  }
+
+  trackClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.trackingService.trackListingClick(this.car.id);
   }
 
   formatSource(source: string): string {

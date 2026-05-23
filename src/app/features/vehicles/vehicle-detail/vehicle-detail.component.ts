@@ -13,6 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { switchMap, finalize } from 'rxjs';
 
 import { VehicleService } from '../services/vehicle.service';
+import { TrackingService } from '@core/services/tracking.service';
 import { CarDetailResponse } from '@shared/interfaces/vehicle.interface';
 
 @Component({
@@ -172,6 +173,7 @@ import { CarDetailResponse } from '@shared/interfaces/vehicle.interface';
               [href]="car()!.originalListingUrl"
               target="_blank"
               rel="noopener noreferrer"
+              (click)="trackListingClick()"
               class="btn-primary text-center">
               View Original Listing
             </a>
@@ -188,6 +190,7 @@ import { CarDetailResponse } from '@shared/interfaces/vehicle.interface';
 })
 export class VehicleDetailComponent implements OnInit {
   private readonly vehicleService = inject(VehicleService);
+  private readonly trackingService = inject(TrackingService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -230,6 +233,13 @@ export class VehicleDetailComponent implements OnInit {
     const images = this.car()?.imageUrls;
     if (images) {
       this.activeImage.update((i) => (i - 1 + images.length) % images.length);
+    }
+  }
+
+  trackListingClick(): void {
+    const carData = this.car();
+    if (carData) {
+      this.trackingService.trackListingClick(carData.id);
     }
   }
 }
