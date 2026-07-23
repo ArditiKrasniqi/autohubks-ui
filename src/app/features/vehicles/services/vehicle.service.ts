@@ -6,6 +6,7 @@ import {
   CarFilterParams,
   CarResponse,
   PagedCarResponse,
+  SortOption,
 } from '@shared/interfaces/vehicle.interface';
 import { environment } from '@env/environment';
 
@@ -31,9 +32,9 @@ export class VehicleService {
     return this.http.get<CarDetailResponse>(`${this.baseUrl}/${id}`);
   }
 
-  getMixedRecentCars(size: number = 6): Observable<CarResponse[]> {
+  getMixedRecentCars(size: number = 6, sortBy: SortOption = 'LATEST'): Observable<CarResponse[]> {
     return this.http.get<CarResponse[]>(`${this.baseUrl}/recent/mixed`, {
-      params: { size: String(size) },
+      params: { size: String(size), sortBy },
     });
   }
 

@@ -53,6 +53,16 @@ export interface PagedCarResponse {
   last: boolean;
 }
 
+export type SortOption = 'LATEST' | 'PRICE_ASC' | 'PRICE_DESC' | 'MILEAGE_ASC' | 'YEAR_DESC';
+
+export const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'LATEST', label: 'Latest' },
+  { value: 'PRICE_DESC', label: 'Price: High to Low' },
+  { value: 'PRICE_ASC', label: 'Price: Low to High' },
+  { value: 'MILEAGE_ASC', label: 'Mileage: Low to High' },
+  { value: 'YEAR_DESC', label: 'Year: Newest' },
+];
+
 export interface CarFilterParams {
   make?: string;
   model?: string;
@@ -68,5 +78,5 @@ export interface CarFilterParams {
   sourceWebsite?: string;
   page?: number;
   size?: number;
-  sort?: string;
+  sortBy?: SortOption;
 }

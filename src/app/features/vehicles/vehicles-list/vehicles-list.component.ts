@@ -16,7 +16,7 @@ import { VehicleService } from '../services/vehicle.service';
 import { VehicleCardComponent } from '../vehicle-card/vehicle-card.component';
 import { LoadingSkeletonComponent } from '@shared/components/loading-skeleton/loading-skeleton.component';
 import { EmptyStateComponent } from '@shared/components/empty-state/empty-state.component';
-import { CarResponse, CarFilterParams, PagedCarResponse } from '@shared/interfaces/vehicle.interface';
+import { CarResponse, CarFilterParams, PagedCarResponse, SORT_OPTIONS } from '@shared/interfaces/vehicle.interface';
 
 @Component({
   selector: 'app-vehicles-list',
@@ -173,33 +173,63 @@ import { CarResponse, CarFilterParams, PagedCarResponse } from '@shared/interfac
 
         <!-- Main content -->
         <section class="flex-1 min-w-0">
-          <!-- Source tabs -->
-          <div class="flex items-center gap-2 flex-wrap mb-6">
-            <button
-              (click)="updateFilter('sourceWebsite', '')"
-              [class]="!filters.sourceWebsite ? 'filter-pill filter-pill-active' : 'filter-pill'">
-              All
-            </button>
-            <button
-              (click)="updateFilter('sourceWebsite', 'KOREA_AUTO_IMPORTS')"
-              [class]="filters.sourceWebsite === 'KOREA_AUTO_IMPORTS' ? 'filter-pill filter-pill-active' : 'filter-pill'">
-              Korea Auto Imports
-            </button>
-            <button
-              (click)="updateFilter('sourceWebsite', 'AUTOKOREA_KOSOVA')"
-              [class]="filters.sourceWebsite === 'AUTOKOREA_KOSOVA' ? 'filter-pill filter-pill-active' : 'filter-pill'">
-              AutoKorea Kosova
-            </button>
-            <button
-              (click)="updateFilter('sourceWebsite', 'LUXURY_CARS_KOSOVA')"
-              [class]="filters.sourceWebsite === 'LUXURY_CARS_KOSOVA' ? 'filter-pill filter-pill-active' : 'filter-pill'">
-              Luxury Cars Kosova
-            </button>
-            <button
-              (click)="updateFilter('sourceWebsite', 'TRIO_VETURA')"
-              [class]="filters.sourceWebsite === 'TRIO_VETURA' ? 'filter-pill filter-pill-active' : 'filter-pill'">
-              TrioVetura
-            </button>
+          <!-- Listing toolbar: category pills + sort -->
+          <div class="listing-toolbar mb-6">
+            <div class="toolbar-pills" role="group" aria-label="Filter by source">
+              <button
+                type="button"
+                (click)="updateFilter('sourceWebsite', '')"
+                [class]="!filters.sourceWebsite ? 'filter-pill filter-pill-active' : 'filter-pill'"
+                [attr.aria-pressed]="!filters.sourceWebsite">
+                All
+              </button>
+              <button
+                type="button"
+                (click)="updateFilter('sourceWebsite', 'KOREA_AUTO_IMPORTS')"
+                [class]="filters.sourceWebsite === 'KOREA_AUTO_IMPORTS' ? 'filter-pill filter-pill-active' : 'filter-pill'"
+                [attr.aria-pressed]="filters.sourceWebsite === 'KOREA_AUTO_IMPORTS'">
+                Korea Auto Imports
+              </button>
+              <button
+                type="button"
+                (click)="updateFilter('sourceWebsite', 'AUTOKOREA_KOSOVA')"
+                [class]="filters.sourceWebsite === 'AUTOKOREA_KOSOVA' ? 'filter-pill filter-pill-active' : 'filter-pill'"
+                [attr.aria-pressed]="filters.sourceWebsite === 'AUTOKOREA_KOSOVA'">
+                AutoKorea Kosova
+              </button>
+              <button
+                type="button"
+                (click)="updateFilter('sourceWebsite', 'LUXURY_CARS_KOSOVA')"
+                [class]="filters.sourceWebsite === 'LUXURY_CARS_KOSOVA' ? 'filter-pill filter-pill-active' : 'filter-pill'"
+                [attr.aria-pressed]="filters.sourceWebsite === 'LUXURY_CARS_KOSOVA'">
+                Luxury Cars Kosova
+              </button>
+              <button
+                type="button"
+                (click)="updateFilter('sourceWebsite', 'TRIO_VETURA')"
+                [class]="filters.sourceWebsite === 'TRIO_VETURA' ? 'filter-pill filter-pill-active' : 'filter-pill'"
+                [attr.aria-pressed]="filters.sourceWebsite === 'TRIO_VETURA'">
+                TrioVetura
+              </button>
+            </div>
+
+            <div class="toolbar-sort">
+              <label class="toolbar-sort-label" for="vehiclesSortBy">Sort by</label>
+              <div class="sort-select-wrapper">
+                <select
+                  id="vehiclesSortBy"
+                  class="sort-select"
+                  [ngModel]="filters.sortBy"
+                  (ngModelChange)="updateFilter('sortBy', $event)">
+                  @for (option of sortOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+                <svg class="sort-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </div>
+            </div>
           </div>
 
           @if (loading$ | async) {
@@ -280,6 +310,7 @@ export class VehiclesListComponent implements OnInit {
   currentPage = 0;
   totalPages = 0;
   totalElements = 0;
+  readonly sortOptions = SORT_OPTIONS;
 
   ngOnInit(): void {
     // Read initial filters from query params
@@ -298,6 +329,7 @@ export class VehiclesListComponent implements OnInit {
           fuelType: params['fuelType'] || '',
           transmission: params['transmission'] || '',
           sourceWebsite: params['sourceWebsite'] || '',
+          sortBy: params['sortBy'] || 'LATEST',
           page: params['page'] ? +params['page'] : 0,
           size: 12,
         };
@@ -360,7 +392,7 @@ export class VehiclesListComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.filters = { page: 0, size: 12 };
+    this.filters = { page: 0, size: 12, sortBy: 'LATEST' };
     this.models$.next([]);
     this.filterSubject.next({ ...this.filters });
   }

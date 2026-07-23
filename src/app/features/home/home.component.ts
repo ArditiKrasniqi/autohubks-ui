@@ -15,7 +15,7 @@ import { finalize } from 'rxjs';
 import { VehicleService } from '../vehicles/services/vehicle.service';
 import { VehicleCardComponent } from '../vehicles/vehicle-card/vehicle-card.component';
 import { LoadingSkeletonComponent } from '@shared/components/loading-skeleton/loading-skeleton.component';
-import { CarResponse } from '@shared/interfaces/vehicle.interface';
+import { CarResponse, SORT_OPTIONS, SortOption } from '@shared/interfaces/vehicle.interface';
 
 @Component({
   selector: 'app-home',
@@ -152,40 +152,72 @@ import { CarResponse } from '@shared/interfaces/vehicle.interface';
 
     <!-- Latest Listings -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h2 class="text-xl font-bold tracking-tight" style="color: #121212;">Latest Listings</h2>
           <p class="text-sm mt-0.5" style="color: #9E9E9E;">Fresh imports from our trusted sources</p>
         </div>
-        <div class="flex items-center gap-2 flex-wrap">
+        <a (click)="onSearch()" class="text-sm font-semibold cursor-pointer transition-colors" style="color: #FF6B2B;">
+          View all &rarr;
+        </a>
+      </div>
+
+      <!-- Listing toolbar: category pills + sort -->
+      <div class="listing-toolbar mb-8">
+        <div class="toolbar-pills" role="group" aria-label="Filter by source">
           <button
+            type="button"
             (click)="filterBySource('')"
-            [class]="activeSource === '' ? 'filter-pill filter-pill-active' : 'filter-pill'">
+            [class]="activeSource === '' ? 'filter-pill filter-pill-active' : 'filter-pill'"
+            [attr.aria-pressed]="activeSource === ''">
             All
           </button>
           <button
+            type="button"
             (click)="filterBySource('KOREA_AUTO_IMPORTS')"
-            [class]="activeSource === 'KOREA_AUTO_IMPORTS' ? 'filter-pill filter-pill-active' : 'filter-pill'">
+            [class]="activeSource === 'KOREA_AUTO_IMPORTS' ? 'filter-pill filter-pill-active' : 'filter-pill'"
+            [attr.aria-pressed]="activeSource === 'KOREA_AUTO_IMPORTS'">
             Korea Auto Imports
           </button>
           <button
+            type="button"
             (click)="filterBySource('AUTOKOREA_KOSOVA')"
-            [class]="activeSource === 'AUTOKOREA_KOSOVA' ? 'filter-pill filter-pill-active' : 'filter-pill'">
+            [class]="activeSource === 'AUTOKOREA_KOSOVA' ? 'filter-pill filter-pill-active' : 'filter-pill'"
+            [attr.aria-pressed]="activeSource === 'AUTOKOREA_KOSOVA'">
             AutoKorea Kosova
           </button>
           <button
+            type="button"
             (click)="filterBySource('LUXURY_CARS_KOSOVA')"
-            [class]="activeSource === 'LUXURY_CARS_KOSOVA' ? 'filter-pill filter-pill-active' : 'filter-pill'">
+            [class]="activeSource === 'LUXURY_CARS_KOSOVA' ? 'filter-pill filter-pill-active' : 'filter-pill'"
+            [attr.aria-pressed]="activeSource === 'LUXURY_CARS_KOSOVA'">
             Luxury Cars Kosova
           </button>
           <button
+            type="button"
             (click)="filterBySource('TRIO_VETURA')"
-            [class]="activeSource === 'TRIO_VETURA' ? 'filter-pill filter-pill-active' : 'filter-pill'">
+            [class]="activeSource === 'TRIO_VETURA' ? 'filter-pill filter-pill-active' : 'filter-pill'"
+            [attr.aria-pressed]="activeSource === 'TRIO_VETURA'">
             TrioVetura
           </button>
-          <a (click)="onSearch()" class="ml-2 text-sm font-semibold cursor-pointer transition-colors" style="color: #FF6B2B;">
-            View all &rarr;
-          </a>
+        </div>
+
+        <div class="toolbar-sort">
+          <label class="toolbar-sort-label" for="homeSortBy">Sort by</label>
+          <div class="sort-select-wrapper">
+            <select
+              id="homeSortBy"
+              class="sort-select"
+              [ngModel]="activeSort()"
+              (ngModelChange)="onSortChange($event)">
+              @for (option of sortOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+            <svg class="sort-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
         </div>
       </div>
 
@@ -244,6 +276,8 @@ export class HomeComponent implements OnInit {
   searchTransmission = '';
   searchFuelType = '';
   activeSource = '';
+  readonly sortOptions = SORT_OPTIONS;
+  readonly activeSort = signal<SortOption>('LATEST');
 
   ngOnInit(): void {
     this.vehicleService
@@ -252,7 +286,7 @@ export class HomeComponent implements OnInit {
       .subscribe((makes) => this.makes.set(makes));
 
     this.vehicleService
-      .getMixedRecentCars(6)
+      .getMixedRecentCars(6, this.activeSort())
       .pipe(
         finalize(() => this.loading.set(false)),
         takeUntilDestroyed(this.destroyRef),
@@ -304,6 +338,13 @@ export class HomeComponent implements OnInit {
     this.loadCars();
   }
 
+  onSortChange(sort: SortOption): void {
+    this.activeSort.set(sort);
+    this.currentPage.set(0);
+    this.totalPages.set(0);
+    this.loadCars();
+  }
+
   goToPage(page: number): void {
     this.currentPage.set(page);
     this.loadCars();
@@ -314,7 +355,7 @@ export class HomeComponent implements OnInit {
 
     if (!this.activeSource) {
       this.vehicleService
-        .getMixedRecentCars(6)
+        .getMixedRecentCars(6, this.activeSort())
         .pipe(
           finalize(() => this.loading.set(false)),
           takeUntilDestroyed(this.destroyRef),
@@ -328,7 +369,7 @@ export class HomeComponent implements OnInit {
         .searchCars({
           page: this.currentPage(),
           size: 6,
-          sort: 'createdAt,desc',
+          sortBy: this.activeSort(),
           sourceWebsite: this.activeSource,
         })
         .pipe(
